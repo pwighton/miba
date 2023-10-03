@@ -58,6 +58,9 @@ do
     echo "cp ${IMG_REF_DIR}/${PET_IMG_FILE} ${PETSURFER_DIR}/pet.nii.gz"
     cp ${IMG_REF_DIR}/${PET_IMG_FILE} ${PETSURFER_DIR}/pet.nii.gz
 
+    echo "mc-afni2 --i ${PETSURFER_DIR}/pet.nii.gz --o ${PETSURFER_DIR}/pet.mc.nii.gz --mcdat ${PETSURFER_DIR}/mc-afni2--motion-parameters.dat"
+    mc-afni2 --i ${PETSURFER_DIR}/pet.nii.gz --o ${PETSURFER_DIR}/pet.mc.nii.gz --mcdat ${PETSURFER_DIR}/mc-afni2--motion-parameters.dat
+    
     echo "${INTEGRATE_PY} -a ${BLOOD_REF_DIR}/${BLOODSTREAM_FILE} -b ${IMG_REF_DIR}/${PET_JSON_FILE} -o ${PETSURFER_DIR}/aif.bloodstream.dat"
     ${INTEGRATE_PY} -a ${BLOOD_REF_DIR}/${BLOODSTREAM_FILE} -b ${IMG_REF_DIR}/${PET_JSON_FILE} -o ${PETSURFER_DIR}/aif.bloodstream.dat
 done
