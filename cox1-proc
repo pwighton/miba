@@ -1,0 +1,486 @@
+#!/bin/tcsh -f
+if(-e $FREESURFER_HOME/sources.csh) then
+  source $FREESURFER_HOME/sources.csh
+endif
+set bloodtop = /autofs/vast/petsurfer/bloodstream
+setenv SUBJECTS_DIR /autofs/vast/petsurfer/cox1/subjects
+set downloadtop = /autofs/vast/petsurfer/cox1/ds004230-download
+set mni152_2mm = /usr/pubsw/packages/fsl/6.0.4/data/standard/MNI152_T1_2mm_brain.nii.gz
+set fsa_2mm = $FREESURFER/subjects/fsaverage/mri.2mm/orig.mgz
+set aiffile = aifpet.dat ; #aif.nih.dat
+set aiffile = aif.nih.kBq.dat ; #aif.nih.dat
+#set slist = (PS19 PS20 PS21 PS24 PS26 PS27 PS28)
+#set slist = (`cat $SUBJECTS_DIR/slist.nih`);
+set pvcpsf = (--psf-col 9.4 --psf-row 7.4 --psf-slice 5.7) # From the AGTM
+set DoPVC = 0
+
+set VERSION = '$Id$';
+set scriptname = `basename $0`
+
+set subject = ();
+set tp = ();
+set outdir = ()
+set threads = 1;
+set ForceUpdate = 0
+set tmpdir = ();
+set cleanup = 1;
+set LF = ();
+
+set inputargs = ($argv);
+set PrintHelp = 0;
+if($#argv == 0) goto usage_exit;
+set n = `echo $argv | grep -e -help | wc -l` 
+if($n != 0) then
+  set PrintHelp = 1;
+  goto usage_exit;
+endif
+set n = `echo $argv | grep -e -version | wc -l` 
+if($n != 0) then
+  echo $VERSION
+  exit 0;
+endif
+goto parse_args;
+parse_args_return:
+goto check_params;
+check_params_return:
+
+set StartTime = `date`;
+set tSecStart = `date '+%s'`;
+set year  = `date +%Y`
+set month = `date +%m`
+set day   = `date +%d`
+set hour   = `date +%H`
+set min    = `date +%M`
+
+mkdir -p $outdir/log
+pushd $outdir > /dev/null
+set outdir = `pwd`;
+popd > /dev/null
+
+if($#tmpdir == 0) then
+  if(-dw /scratch)   set tmpdir = /scratch/tmpdir.cox1-proc.$$
+  if(! -dw /scratch) set tmpdir = $outdir/tmpdir.cox1-proc.$$
+endif
+#mkdir -p $tmpdir
+
+# Set up log file
+if($#LF == 0) set LF = $outdir/log/cox1-proc.Y$year.M$month.D$day.H$hour.M$min.log
+if($LF != /dev/null) rm -f $LF
+echo "Log file for cox1-proc" >> $LF
+date  | tee -a $LF
+echo "" | tee -a $LF
+echo "setenv SUBJECTS_DIR $SUBJECTS_DIR" | tee -a $LF
+echo "cd `pwd`"  | tee -a $LF
+echo $0 $inputargs | tee -a $LF
+ls -l $0  | tee -a $LF
+echo "" | tee -a $LF
+cat $FREESURFER_HOME/build-stamp.txt | tee -a $LF
+echo $VERSION | tee -a $LF
+uname -a  | tee -a $LF
+echo "pid $$" | tee -a $LF
+if($?PBS_JOBID) then
+  echo "pbsjob $PBS_JOBID"  >> $LF
+endif
+if($?SLURM_JOB_ID) then
+  echo SLURM_JOB_ID $SLURM_JOB_ID >> $LF
+endif
+
+#========================================================
+set apas = $SUBJECTS_DIR/$subject/mri/aparc+aseg.mgz
+set petdir = $SUBJECTS_DIR/$subject/pet$tp
+set pet = $petdir/pet.nii.gz
+set petmn = $petdir/pet.mn.nii.gz
+set anatmnireg = $SUBJECTS_DIR/$subject/mri/transforms/reg.mni152.2mm.lta
+
+set reg = $petdir/reg.lta
+set ud = `UpdateNeeded $reg $petmn`
+if($ud || $ForceUpdate) then
+  set cmd = (mri_coreg --s $subject --mov $petmn --reg $reg --threads $threads)
+  echo $cmd | tee -a $LF
+  $cmd | tee -a $LF
+  if($status) goto error_exit
+endif
+
+set mnireg = $outdir/reg.mni.lta
+set ud = `UpdateNeeded $mnireg $reg $anatmnireg`
+if($ud || $ForceUpdate) then
+  set cmd = (mri_concatenate_lta -invert2 $reg $anatmnireg $mnireg)
+  echo $cmd | tee -a $LF
+  $cmd | tee -a $LF
+  if($status) goto error_exit
+endif
+
+set fsareg = $outdir/reg.fsa2mm.lta
+set anatfsareg = $SUBJECTS_DIR/$subject/mri/transforms/talairach.xfm.lta
+set ud = `UpdateNeeded $fsareg $reg $anatfsareg`
+if($ud || $ForceUpdate) then
+  set fsareg1mm = $outdir/reg.fsa1mm.lta
+  set cmd = (mri_concatenate_lta -subject fsaverage $reg $anatfsareg $fsareg1mm)
+  echo $cmd | tee -a $LF
+  $cmd | tee -a $LF
+  if($status) goto error_exit
+  # Should not have to do this ...
+  set cmd = (lta_convert --src $petmn --trg $fsa_2mm --inlta $fsareg1mm --outlta $fsareg)
+  echo $cmd | tee -a $LF
+  $cmd | tee -a $LF
+  if($status) goto error_exit
+endif
+
+# Map aparc+aseg to PET space
+set petapas = $outdir/apas.nii.gz
+set ud = `UpdateNeeded $petapas $reg $petmn $apas`
+if($ud || $ForceUpdate) then
+  set cmd = (mri_vol2vol --mov $petmn --targ $apas --reg $reg --inv --o $petapas --interp nearest)
+  echo $cmd | tee -a $LF
+  $cmd | tee -a $LF
+  if($status) goto error_exit
+endif
+
+# Create a brainmask in PET space
+set mask = $outdir/mask.nii.gz
+set ud = `UpdateNeeded $mask $petapas`
+if($ud || $ForceUpdate) then
+  set cmd = (mri_binarize --i $petapas --dilate 2 --min 0.5 --o $mask)
+  echo $cmd | tee -a $LF
+  $cmd | tee -a $LF
+  if($status) goto error_exit
+endif
+
+# Run GTM on TACs
+if($DoPVC == 0) set gtmdir = $outdir/gtm.nopvc
+if($DoPVC == 1) set gtmdir = $outdir/gtm.pvc
+set petgtm = $gtmdir/gtm.nii.gz
+set ud = `UpdateNeeded $petgtm $pet $reg`
+if($ud || $ForceUpdate) then
+  set cmd = (mri_gtmpvc --no-rescale --default-seg-merge --reg $reg --seg gtmseg.mgz \
+    --o $gtmdir --mask $mask --i $pet)
+  if($DoPVC == 0) set cmd = ($cmd --no-pvc)
+  if($DoPVC == 1) set cmd = ($cmd $pvcpsf --mgx .1 --no-reduce-fov) # Leave fov so mask and reg are ok
+  echo $cmd | tee -a $LF
+  $cmd | tee -a $LF
+  if($status) goto error_exit
+endif
+
+if($DoPVC) then
+  set pet = $gtmdir/mgx.gm.nii.gz
+  pushd $outdir
+  ln -sf gtm.pvc gtm.nopvc # hack so that I don't have to change the atlas creation scrpt
+  popd
+endif
+
+# Run logan in pet space (no smoothing)
+set glmdir = $outdir/glmfit.logan
+set dvr = $glmdir/dvr/gamma.nii.gz
+set aif = $petdir/$aiffile
+set tsec = $petdir/tsec.txt
+if(! -e $tsec) set tsec = $SUBJECTS_DIR/tsec.txt
+set tstar = 540 # sec
+set ud = `UpdateNeeded $dvr $mask $pet $aif $tsec`
+if($ud || $ForceUpdate) then
+  set cmd = (mri_glmfit --y $pet --logan $aif $tsec $tstar --o $glmdir \
+    --mask $mask --nii.gz) # --threads $threads)
+  echo $cmd | tee -a $LF
+  $cmd | tee -a $LF
+  if($status) goto error_exit
+endif
+
+# Map DVR to mni and fsaverage volume space
+foreach space (mni fsaverage)
+  set thisdvr = $glmdir/dvr/dvr.$space.nii.gz
+  if($space == mni) then
+    set thisreg = $mnireg
+    set thistarg = $mni152_2mm
+  endif
+  if($space == fsaverage) then
+    set thisreg = $fsareg
+    set thistarg = $fsa_2mm
+  endif
+  set ud = `UpdateNeeded $thisdvr $dvr $thisreg`
+  if($ud || $ForceUpdate) then
+    set cmd = (mri_vol2vol --mov $dvr --reg $thisreg --targ $thistarg --o $thisdvr)
+    echo $cmd | tee -a $LF
+    $cmd | tee -a $LF
+    if($status) goto error_exit
+  endif
+end
+
+# Map DVR to fnirt and spmvbm mni152 space
+foreach space (mni152.fnirt mni152.spmvbm)
+  set thisdvr = $glmdir/dvr/dvr.$space.nii.gz
+  if($space == mni152.fnirt) then
+    set gcam = $SUBJECTS_DIR/$subject/mri/mni152reg.fnirt/warp.2mm.m3z 
+  endif
+  if($space == mni152.spmvbm) then
+    set gcam = $SUBJECTS_DIR/$subject/mri/vbm/vbm.m3z 
+  endif
+  set ud = `UpdateNeeded $thisdvr $dvr $reg $gcam`
+  if($ud || $ForceUpdate) then
+    set cmd = (mri_vol2vol --gcam $dvr $reg $gcam 0 0 1 $thisdvr)
+    echo $cmd | tee -a $LF
+    $cmd | tee -a $LF
+    if($status) goto error_exit
+  endif
+end
+
+# Map onto fsaverage and mni152 surface space
+foreach targsurfsubj (fsaverage mni152)
+  foreach hemi (lh rh)
+    set dvrsurf = $glmdir/dvr/dvr.$targsurfsubj.$hemi.nii.gz
+    set ud = `UpdateNeeded $dvrsurf $dvr $reg`
+    if($ud || $ForceUpdate) then
+      set cmd = (mri_vol2surf --mov $dvr --reg $reg --hemi $hemi \
+        --projfrac 0.5 --o $dvrsurf --trgsubject $targsurfsubj --cortex)
+      echo $cmd | tee -a $LF
+      $cmd | tee -a $LF
+      if($status) goto error_exit
+    endif
+  end
+end
+
+# Compute DVR on ROIs
+set glmdir = $gtmdir/glmfit.logan
+set dvrgtm = $glmdir/dvr/gamma.nii.gz
+set ud = `UpdateNeeded $dvrgtm $petgtm $aif $tsec`
+if($ud || $ForceUpdate) then
+  set cmd = (mri_glmfit --y $petgtm --logan $aif $tsec $tstar --o $glmdir \
+     --nii.gz --no-est-fwhm)
+  echo $cmd | tee -a $LF
+  $cmd | tee -a $LF
+  if($status) goto error_exit
+endif
+
+
+#========================================================
+
+# Cleanup
+# if($cleanup) rm -rf $tmpdir
+
+# Done
+echo " " |& tee -a $LF
+set tSecEnd = `date '+%s'`;
+@ tSecRun = $tSecEnd - $tSecStart;
+set tRunMin = `echo $tSecRun/50|bc -l`
+set tRunMin = `printf %5.2f $tRunMin`
+set tRunHours = `echo $tSecRun/3600|bc -l`
+set tRunHours = `printf %5.2f $tRunHours`
+echo "Started at $StartTime " |& tee -a $LF
+echo "Ended   at `date`" |& tee -a $LF
+echo "Cox1-Proc-Run-Time-Sec $tSecRun" |& tee -a $LF
+echo "Cox1-Proc-Run-Time-Min $tRunMin" |& tee -a $LF
+echo "Cox1-Proc-Run-Time-Hours $tRunHours" |& tee -a $LF
+echo " " |& tee -a $LF
+echo "cox1-proc Done" |& tee -a $LF
+exit 0
+
+###############################################
+
+############--------------##################
+error_exit:
+echo "ERROR:"
+
+exit 1;
+###############################################
+
+############--------------##################
+parse_args:
+set cmdline = ($argv);
+while( $#argv != 0 )
+
+  set flag = $argv[1]; shift;
+  
+  switch($flag)
+
+    case "--o":
+      if($#argv < 1) goto arg1err;
+      set outdir = $argv[1]; shift;
+      breaksw
+
+    case "--s":
+      if($#argv < 1) goto arg1err;
+      set subject = $argv[1]; shift;
+      breaksw
+
+    case "--tp":
+      if($#argv < 1) goto arg1err;
+      set tp = $argv[1]; shift;
+      breaksw
+
+    case "--pvc":
+      set DoPVC = 1
+      breaksw
+    case "--no-pvc":
+      set DoPVC = 1
+      breaksw
+
+    case "--sd":
+      if($#argv < 1) goto arg1err;
+      setenv SUBJECTS_DIR $argv[1]; shift;
+      breaksw
+
+    case "--threads":
+      if($#argv < 1) goto arg1err;
+      set threads = $argv[1]; shift;
+      breaksw
+
+    case "--force":
+     set ForceUpdate = 1
+     breaksw
+    case "--no-force":
+     set ForceUpdate = 0
+     breaksw
+
+    case "--log":
+      if($#argv < 1) goto arg1err;
+      set LF = $argv[1]; shift;
+      breaksw
+
+    case "--nolog":
+    case "--no-log":
+      set LF = /dev/null
+      breaksw
+
+    case "--tmp":
+    case "--tmpdir":
+      if($#argv < 1) goto arg1err;
+      set tmpdir = $argv[1]; shift;
+      set cleanup = 0;
+      breaksw
+
+    case "--nocleanup":
+      set cleanup = 0;
+      breaksw
+
+    case "--cleanup":
+      set cleanup = 1;
+      breaksw
+
+    case "--debug":
+      set verbose = 1;
+      set echo = 1;
+      breaksw
+
+    default:
+      echo ERROR: Flag $flag unrecognized. 
+      echo $cmdline
+      exit 1
+      breaksw
+  endsw
+
+end
+
+goto parse_args_return;
+############--------------##################
+
+############--------------##################
+check_params:
+
+if($#subject == 0) then
+  echo "ERROR: must spec subject"
+  exit 1;
+endif
+if(! -e $SUBJECTS_DIR/$subject) then
+  echo "ERROR: cannot find $subject"
+  exit 1;
+endif
+if($#tp == 0) then
+  echo "ERROR: must spec tp"
+  exit 1;
+endif
+if($#outdir == 0) then
+  if($aiffile == aifpet.dat)  set outdir = $SUBJECTS_DIR/$subject/pet$tp/proc
+  if($aiffile == aif.nih.kBq.dat) set outdir = $SUBJECTS_DIR/$subject/pet$tp/proc.nih
+  if($DoPVC) set outdir = $outdir.pvc
+endif
+
+goto check_params_return;
+############--------------##################
+
+############--------------##################
+arg1err:
+  echo "ERROR: flag $flag requires one argument"
+  exit 1
+############--------------##################
+arg2err:
+  echo "ERROR: flag $flag requires two arguments"
+  exit 1
+############--------------##################
+
+############--------------##################
+usage_exit:
+  echo ""
+  echo "cox1-proc"
+  echo " --s subject (eg, cox1.PS19)"
+  echo " --tp tp"
+  echo " --pvc : to perform partial volume correction"
+  echo ""
+
+  if(! $PrintHelp) exit 1;
+  echo $VERSION
+  cat $0 | awk 'BEGIN{prt=0}{if(prt) print $0; if($1 == "BEGINHELP") prt = 1 }'
+exit 1;
+
+#---- Everything below here is printed out as part of help -----#
+BEGINHELP
+
+
+foreach tp (1 2)
+foreach tp (2)
+  foreach s ( `cat slist.nih ` )
+    pbsubmit -c "cox1-proc --tp $tp --s $s"
+  end
+end
+
+
+cd /autofs/vast/petsurfer/cox1/subjects
+
+# FS version 
+set atlasdir = mibas.d/ps13-ds004230/nomc.nopvc.nosm.logan.ts540
+mkdir -p $atlasdir
+set tmpdir = $atlasdir/tmp
+mkdir -p $tmpdir
+set ctab = roi.ctab #cox1.PS19/pet1/proc.nih/gtm.nopvc/aux/seg.ctab
+cp $ctab $atlasdir/roi.ctab
+
+set notused = (mni152.lh mni152.rh mni152 )
+set  spacelist = (roi fsaverage fsaverage.lh fsaverage.rh mni152.spmvbm mni152.fnirt)
+foreach pvctype (pvc nopvc)
+  set pvc = ""
+  if($pvctype == pvc) set pvc = .pvc
+foreach space ($spacelist)
+  set flist = ()
+  foreach s (`cat slist.nih`)
+    set tplist = ()
+    foreach tp (1 2)
+      set d = $s/pet$tp/proc.nih$pvc/
+      set f = $d/glmfit.logan/dvr/dvr.$space.nii.gz
+      if($space == roi)    set f = $d/gtm.nopvc/glmfit.logan/dvr/gamma.nii.gz
+      if($space == mni152) set f = $d/glmfit.logan/dvr/dvr.mni.nii.gz
+      if($space == mni152.lh)     set f = $d/glmfit.logan/dvr/dvr.mni152.lh.nii.gz
+      if($space == mni152.rh)     set f = $d/glmfit.logan/dvr/dvr.mni152.rh.nii.gz
+      if($space == fsaverage)     set f = $d/glmfit.logan/dvr/dvr.fsaverage.nii.gz
+      if($space == fsaverage.lh)     set f = $d/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz
+      if($space == fsaverage.rh)     set f = $d/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz
+      set tplist = ($tplist $f)
+    end 
+    mri_concat $tplist --mean --o $tmpdir/$space.$pvctype.$s.nii.gz
+    set flist = ($flist $tmpdir/$space.$pvctype.$s.nii.gz)
+  end 
+  mri_concat $flist --mean --o $atlasdir/$space.$pvctype.mean.nii.gz
+  mri_concat $flist --std  --o $atlasdir/$space.$pvctype.std.nii.gz
+end
+end
+
+
+#set mni152dir = /autofs/cluster/fsm/users/greve/subjects/mni152
+#cp -rp $mni152dir $atlasdir/
+
+# run in matlab from the atlasdir
+[code name rgb tt] = read_fscolorlut('roi.ctab');
+mn = MRIread('roi.mean.nii.gz');
+sd = MRIread('roi.std.nii.gz');
+fp = fopen('roi.csv','w');
+fprintf(fp,'ROI,Mean,StdDev\n');
+for n = 1:size(code,1)
+  fprintf(fp,'%s,%8.5f,%8.5f\n',name(n,:),mn.vol(1,n,1,1),sd.vol(1,n,1,1));
+end
+fclose(fp);

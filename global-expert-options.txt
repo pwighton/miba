@@ -1,0 +1,6 @@
+WhitePreAparc --rip-bg-no-annot --restore-255  --outvol mrisps.wpa.mgz
+PlaceWhiteSurf --restore-255 --outvol mrisps.white.mgz
+T1PialSurf --restore-255 --outvol mrisps.pial.mgz
+mri_ca_label -vent-fix  -1 7000 1 -insert-wm-bet-putctx 1
+mri_edit_wm_with_aseg -fix-scm-ha 1
+mris_fix_topology -threads 1
