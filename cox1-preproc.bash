@@ -9,13 +9,16 @@
 #  - bids pet img sidecar (json)
 #    - assumes an corresponding .nii.gz file also exists
 #  - bloodstram file  
-MAP_FILE="/home/paul/lcn/20230918-bloodstream-r/cox1-preproc-mapping.txt"
+MAP_FILE="/autofs/vast/gerenuk/pwighton/pet/miba/cox1-preproc-mapping.txt"
 
 # Top level directory of pet imaging data
-IMG_REF_DIR="/home/paul/lcn/20230918-bloodstream-r/ds004230-plus-cox1blocked"
+IMG_REF_DIR="/autofs/vast/gerenuk/pwighton/pet/ds004230-plus-cox1blocked"
 
 # Top level directory of bloodstream data
-BLOOD_REF_DIR="/home/paul/lcn/20230918-bloodstream-r/ds004230-plus-cox1blocked/derivatives/bloodstream2023-08-28_id-tfK8--martin"
+BLOOD_REF_DIR="/autofs/vast/gerenuk/pwighton/pet/ds004230-plus-cox1blocked--bloodstream2023-08-28_id-tfK8--martin"
+
+# Location of integrate.py
+INTEGRATE_PY="/autofs/vast/gerenuk/pwighton/pet/miba/integrate.py"
 
 echo "SUBJECTS_DIR:         "$SUBJECTS_DIR
 echo "MAP_FILE:             "$MAP_FILE
@@ -25,7 +28,8 @@ echo "BLOOD_REF_DIR:        "$BLOOD_REF_DIR
 # Make the file tsec.txt
 #  Assumes consistent frame timing across dataset
 PET_JSON_FILE=$(cat $MAP_FILE | sed -n "1p" | awk '{print $3}')
-jq '.FrameTimesStart[]' ${IMG_REF_DIR}/${PET_JSON_FILE} > $SUBJECTS_DIR/tsec.txt`
+echo "jq '.FrameTimesStart[]' ${IMG_REF_DIR}/${PET_JSON_FILE} > $SUBJECTS_DIR/tsec.txt"
+jq '.FrameTimesStart[]' ${IMG_REF_DIR}/${PET_JSON_FILE} > $SUBJECTS_DIR/tsec.txt
 
 NUM_LINES=$(cat $MAP_FILE|wc -l)
 for LINE_NUM in $(seq $NUM_LINES)
@@ -46,9 +50,14 @@ do
     echo "PETSURFER_DIR:    "$PETSURFER_DIR 
     
     echo "rm -rf ${PETSURFER_DIR}"
+    rm -rf ${PETSURFER_DIR}
+
     echo "mkdir -p ${PETSURFER_DIR}"
+    mkdir -p ${PETSURFER_DIR}
+
     echo "cp ${IMG_REF_DIR}/${PET_IMG_FILE} ${PETSURFER_DIR}/pet.nii.gz"
-    echo "integrate.py -a ${BLOOD_REF_DIR}/${BLOODSTREAM_FILE} -b ${IMG_REF_DIR}/${PET_JSON_FILE} -o ${PETSURFER_DIR}/aif.bloodstream.dat"
+    cp ${IMG_REF_DIR}/${PET_IMG_FILE} ${PETSURFER_DIR}/pet.nii.gz
 
+    echo "${INTEGRATE_PY} -a ${BLOOD_REF_DIR}/${BLOODSTREAM_FILE} -b ${IMG_REF_DIR}/${PET_JSON_FILE} -o ${PETSURFER_DIR}/aif.bloodstream.dat"
+    ${INTEGRATE_PY} -a ${BLOOD_REF_DIR}/${BLOODSTREAM_FILE} -b ${IMG_REF_DIR}/${PET_JSON_FILE} -o ${PETSURFER_DIR}/aif.bloodstream.dat
 done
-
