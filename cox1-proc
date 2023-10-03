@@ -2,15 +2,12 @@
 if(-e $FREESURFER_HOME/sources.csh) then
   source $FREESURFER_HOME/sources.csh
 endif
-set bloodtop = /autofs/vast/petsurfer/bloodstream
-setenv SUBJECTS_DIR /autofs/vast/petsurfer/cox1/subjects
-set downloadtop = /autofs/vast/petsurfer/cox1/ds004230-download
+
+setenv SUBJECTS_DIR /autofs/vast/gerenuk/pwighton/pet/fs-subs
+
 set mni152_2mm = /usr/pubsw/packages/fsl/6.0.4/data/standard/MNI152_T1_2mm_brain.nii.gz
 set fsa_2mm = $FREESURFER/subjects/fsaverage/mri.2mm/orig.mgz
-set aiffile = aifpet.dat ; #aif.nih.dat
-set aiffile = aif.nih.kBq.dat ; #aif.nih.dat
-#set slist = (PS19 PS20 PS21 PS24 PS26 PS27 PS28)
-#set slist = (`cat $SUBJECTS_DIR/slist.nih`);
+set aiffile = aif.bloodstream.dat ; #aif.nih.dat
 set pvcpsf = (--psf-col 9.4 --psf-row 7.4 --psf-slice 5.7) # From the AGTM
 set DoPVC = 0
 
