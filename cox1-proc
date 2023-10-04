@@ -49,6 +49,7 @@ set day   = `date +%d`
 set hour   = `date +%H`
 set min    = `date +%M`
 
+# PW ???
 mkdir -p $outdir/log
 pushd $outdir > /dev/null
 set outdir = `pwd`;
@@ -201,23 +202,24 @@ foreach space (mni fsaverage)
   endif
 end
 
+# PW 2023/10/04 commenting out for now
 # Map DVR to fnirt and spmvbm mni152 space
-foreach space (mni152.fnirt mni152.spmvbm)
-  set thisdvr = $glmdir/dvr/dvr.$space.nii.gz
-  if($space == mni152.fnirt) then
-    set gcam = $SUBJECTS_DIR/$subject/mri/mni152reg.fnirt/warp.2mm.m3z 
-  endif
-  if($space == mni152.spmvbm) then
-    set gcam = $SUBJECTS_DIR/$subject/mri/vbm/vbm.m3z 
-  endif
-  set ud = `UpdateNeeded $thisdvr $dvr $reg $gcam`
-  if($ud || $ForceUpdate) then
-    set cmd = (mri_vol2vol --gcam $dvr $reg $gcam 0 0 1 $thisdvr)
-    echo $cmd | tee -a $LF
-    $cmd | tee -a $LF
-    if($status) goto error_exit
-  endif
-end
+#foreach space (mni152.fnirt mni152.spmvbm)
+#  set thisdvr = $glmdir/dvr/dvr.$space.nii.gz
+#  if($space == mni152.fnirt) then
+#    set gcam = $SUBJECTS_DIR/$subject/mri/mni152reg.fnirt/warp.2mm.m3z 
+#  endif
+#  if($space == mni152.spmvbm) then
+#    set gcam = $SUBJECTS_DIR/$subject/mri/vbm/vbm.m3z 
+#  endif
+#  set ud = `UpdateNeeded $thisdvr $dvr $reg $gcam`
+#  if($ud || $ForceUpdate) then
+#    set cmd = (mri_vol2vol --gcam $dvr $reg $gcam 0 0 1 $thisdvr)
+#    echo $cmd | tee -a $LF
+#    $cmd | tee -a $LF
+#    if($status) goto error_exit
+#  endif
+#end
 
 # Map onto fsaverage and mni152 surface space
 foreach targsurfsubj (fsaverage mni152)
