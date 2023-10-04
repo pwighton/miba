@@ -12,7 +12,7 @@
 #SBATCH --time=0-16:00:00
 #SBATCH --output=slurm-%A_%a.out
 
-# PW match the 7 with `wc -l ${SUB_LIST}`
+# PW match the 23 with `wc -l ${SUB_LIST}`
 #SBATCH --array=1-23%8
 
 export SUBJECTS_DIR=/autofs/vast/gerenuk/pwighton/pet/fs-subs
@@ -20,7 +20,7 @@ export FREESURFER_HOME=/usr/local/freesurfer/7.4.1
 
 source $FREESURFER_HOME/SetUpFreeSurfer.sh
 
-SUB_LIST=/autofs/vast/gerenuk/pwighton/pet/ds004230-plus-cox1blocked-subject-list.txt
+SUB_LIST=/autofs/vast/gerenuk/pwighton/pet/miba/ds004230-plus-cox1blocked-subject-list.txt
 
 INPUT_FILE=$(cat $SUB_LIST | sed -n "${SLURM_ARRAY_TASK_ID}p" | awk '{print $1}')
 SUB_NAME=$(cat $SUB_LIST | sed -n "${SLURM_ARRAY_TASK_ID}p" | awk '{print $2}')
