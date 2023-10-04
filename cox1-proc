@@ -222,7 +222,9 @@ end
 #end
 
 # Map onto fsaverage and mni152 surface space
-foreach targsurfsubj (fsaverage mni152)
+# PW 2023/10/04 disabling mni152 mapping for now
+#foreach targsurfsubj (fsaverage mni152)
+foreach targsurfsubj (fsaverage)
   foreach hemi (lh rh)
     set dvrsurf = $glmdir/dvr/dvr.$targsurfsubj.$hemi.nii.gz
     set ud = `UpdateNeeded $dvrsurf $dvr $reg`
