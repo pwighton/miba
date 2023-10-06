@@ -8,7 +8,7 @@ import json
 import pandas
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Integrate AIF over the PET frames')
+    parser = argparse.ArgumentParser(description='Calculate framewise AIF by integrating AIF over the PET frames, then dividing by frame duration')
     parser.add_argument('-a', '--aif', help='Arterial input function data, currently expects output of bloodstream', required=True)
     parser.add_argument('-b', '--bids', help='BIDS sidecar file to PET data; expecting to find FrameTimesStart and FrameDuration', required=True)
     parser.add_argument('-o', '--out', help='Filename to write test results to, one per line', default='aif.bloodstream.dat')
@@ -42,10 +42,10 @@ def main(cmd_args):
     blood_aif_cumulative_at_end_times = np.interp(frame_end_times, blood_time, blood_aif_cumulative)
 
     # The integral over the PET timefreame is the difference
-    blood_aif_cumulative_by_frame = blood_aif_cumulative_at_end_times - blood_aif_cumulative_at_start_times
+    blood_aif_by_frame = (blood_aif_cumulative_at_end_times - blood_aif_cumulative_at_start_times) / frame_durations
 
     # Save to file
-    np.savetxt(args.out, blood_aif_cumulative_by_frame, newline="\n")
+    np.savetxt(args.out, blood_aif_by_frame, newline="\n")
 	
 if __name__ == "__main__":
     sys.exit(main(sys.argv))

@@ -18,7 +18,7 @@ IMG_REF_DIR="/autofs/vast/gerenuk/pwighton/pet/ds004230-plus-cox1blocked"
 BLOOD_REF_DIR="/autofs/vast/gerenuk/pwighton/pet/ds004230-plus-cox1blocked--bloodstream2023-08-28_id-tfK8--martin"
 
 # Location of integrate.py
-INTEGRATE_PY="/autofs/vast/gerenuk/pwighton/pet/miba/integrate.py"
+CALC_FRAMEWISE_AIF_PY="/autofs/vast/gerenuk/pwighton/pet/miba/calc_framewise_aif.py"
 
 echo "SUBJECTS_DIR:         "$SUBJECTS_DIR
 echo "MAP_FILE:             "$MAP_FILE
@@ -61,6 +61,6 @@ do
     echo "mc-afni2 --i ${PETSURFER_DIR}/pet.nii.gz --o ${PETSURFER_DIR}/pet.mc.nii.gz --mcdat ${PETSURFER_DIR}/mc-afni2--motion-parameters.dat"
     mc-afni2 --i ${PETSURFER_DIR}/pet.nii.gz --o ${PETSURFER_DIR}/pet.mc.nii.gz --mcdat ${PETSURFER_DIR}/mc-afni2--motion-parameters.dat
     
-    echo "${INTEGRATE_PY} -a ${BLOOD_REF_DIR}/${BLOODSTREAM_FILE} -b ${IMG_REF_DIR}/${PET_JSON_FILE} -o ${PETSURFER_DIR}/aif.bloodstream.dat"
-    ${INTEGRATE_PY} -a ${BLOOD_REF_DIR}/${BLOODSTREAM_FILE} -b ${IMG_REF_DIR}/${PET_JSON_FILE} -o ${PETSURFER_DIR}/aif.bloodstream.dat
+    echo "${CALC_FRAMEWISE_AIF_PY} -a ${BLOOD_REF_DIR}/${BLOODSTREAM_FILE} -b ${IMG_REF_DIR}/${PET_JSON_FILE} -o ${PETSURFER_DIR}/aif.bloodstream.dat"
+    ${CALC_FRAMEWISE_AIF_PY} -a ${BLOOD_REF_DIR}/${BLOODSTREAM_FILE} -b ${IMG_REF_DIR}/${PET_JSON_FILE} -o ${PETSURFER_DIR}/aif.bloodstream.dat
 done

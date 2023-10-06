@@ -83,6 +83,12 @@ mni152reg --s $SUB
 
 ## 5) Run `cox1-preproc.bash`
 
+Edit `cox1-preproc.bash` and set:
+- `MAP_FILE`
+- `IMG_REF_DIR`
+- `BLOOD_REF_DIR`
+- `CALC_FRAMEWISE_AIF_PY`
+
 Run `cox1-preproc.bash` which:
 
 - Takes as input a mapping file (`cox1-preproc-mapping.txt`) containing
