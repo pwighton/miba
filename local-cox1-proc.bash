@@ -39,6 +39,7 @@ do
     echo "OUT_DIR_FULL: "${OUT_DIR_FULL}
 
     echo "${COX1_PROC} --s ${SUB_NAME} --tp ${TIMEPOINT} --o ${OUT_DIR_FULL}"
+    ${COX1_PROC} --s ${SUB_NAME} --tp ${TIMEPOINT} --o ${OUT_DIR_FULL}
 done
 
 
