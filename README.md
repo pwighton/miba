@@ -111,6 +111,7 @@ Run `cox1-preproc.bash` which:
   - fs subjects
   - pet study dirs
   - pet `.json` sidecar file (assumed to have matching `.nii.gz` file)
+  - motion corrected pet imaging file
   - bloodstream file
 - And:
   - Creates the file `$SUBJECTS_DIR/tsec.txt`
@@ -118,7 +119,7 @@ Run `cox1-preproc.bash` which:
   - For each line in provenance file:
     - Creates the folder `${SUBJECTS_DIR}/${FS+SUBJECT}/${PET_STUDY}`
     - Copies `${PET_IMAGE}` to `${SUBJECTS_DIR}/${FS+SUBJECT}/${PET_STUDY}/pet.nii.gz`
-    - Motion corrects `${SUBJECTS_DIR}/${FS+SUBJECT}/${PET_STUDY}/pet.nii.gz` using `mc-afni2` and saves the result to `${SUBJECTS_DIR}/${FS+SUBJECT}/${PET_STUDY}/pet.mn.nii.gz`
+    - Runs `mri_convert --reslice_like` on `${PET_MOCO_FILE}` to generate `${SUBJECTS_DIR}/${FS+SUBJECT}/${PET_STUDY}/pet.mn.nii.gz`.  This ensures `pet.mn.nii.gz` has the same number of voxels and dimensions as `pet.nii.gz`
     - Creates mean AIF per PET frame (`${SUBJECTS_DIR}/${FS_SUBJECT}/${PET_STUDY}/aif.bloodstream.dat`) by running `calc_framewise_aif.py` on the bloodstream file
     
 ## 5) Run `cox1-proc`
@@ -214,7 +215,7 @@ cd $SUBJECTS_DIR
 
 First generate the difference between unblocked and blocked for each subject:
 
-(*PW: I'm having trouble processing sub-PS51_sess-blocked for some reason, so that subject is currently excluded*)
+(*PW: I'm having trouble processing sub-PS50_sess-blocked for some reason, so that subject is currently excluded*)
 
 ```
 cd $SUBJECTS_DIR
