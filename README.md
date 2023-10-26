@@ -110,7 +110,7 @@ Run `cox1-preproc.bash` which:
 - Takes as input a mapping file (`cox1-preproc-mapping.txt`) containing
   - fs subjects
   - pet study dirs
-  - pet `.json` sidecar file (assumed to have matching `.nii.gz` file)
+  - pet `.json` sidecar file
   - motion corrected pet imaging file
   - bloodstream file
 - And:
@@ -119,7 +119,7 @@ Run `cox1-preproc.bash` which:
   - For each line in provenance file:
     - Creates the folder `${SUBJECTS_DIR}/${FS+SUBJECT}/${PET_STUDY}`
     - Copies `${PET_IMAGE}` to `${SUBJECTS_DIR}/${FS+SUBJECT}/${PET_STUDY}/pet.nii.gz`
-    - Runs `mri_convert --reslice_like` on `${PET_MOCO_FILE}` to generate `${SUBJECTS_DIR}/${FS+SUBJECT}/${PET_STUDY}/pet.mn.nii.gz`.  This ensures `pet.mn.nii.gz` has the same number of voxels and dimensions as `pet.nii.gz`
+    - Creates a mean image across time from `${SUBJECTS_DIR}/${FS+SUBJECT}/${PET_STUDY}/pet.nii.gz`
     - Creates mean AIF per PET frame (`${SUBJECTS_DIR}/${FS_SUBJECT}/${PET_STUDY}/aif.bloodstream.dat`) by running `calc_framewise_aif.py` on the bloodstream file
     
 ## 5) Run `cox1-proc`
