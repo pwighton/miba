@@ -23,7 +23,7 @@ MOCO_REF_DIR="/autofs/vast/gerenuk/pwighton/pet/ds004230-plus-cox1blocked--petpr
 BLOOD_REF_DIR="/autofs/vast/gerenuk/pwighton/pet/ds004230-plus-cox1blocked--bloodstream2023-08-28_id-tfK8--martin"
 
 # Location of integrate.py
-CALC_FRAMEWISE_AIF_PY="calc_framewise_aif.py"
+CALC_FRAMEWISE_AIF_PY="/autofs/vast/gerenuk/pwighton/pet/miba/calc_framewise_aif.py"
 
 echo "SUBJECTS_DIR:         "$SUBJECTS_DIR
 echo "MAP_FILE:             "$MAP_FILE
