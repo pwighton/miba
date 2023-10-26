@@ -67,7 +67,7 @@ do
     cp ${MOCO_REF_DIR}/${PET_MOCO_FILE} ${PETSURFER_DIR}/pet.nii.gz
 
     echo "mri_concat ${PETSURFER_DIR}/pet.nii.gz --mean --o ${PETSURFER_DIR}/pet.mn.nii.gz"
-    mri_concat ${PETSURFER_DIR}/pet.nii.gz --mean -o ${PETSURFER_DIR}/pet.mn.nii.gz
+    mri_concat ${PETSURFER_DIR}/pet.nii.gz --mean --o ${PETSURFER_DIR}/pet.mn.nii.gz
 
     echo "${CALC_FRAMEWISE_AIF_PY} -a ${BLOOD_REF_DIR}/${BLOODSTREAM_FILE} -b ${IMG_REF_DIR}/${PET_JSON_FILE} -o ${PETSURFER_DIR}/aif.bloodstream.dat"
     ${CALC_FRAMEWISE_AIF_PY} -a ${BLOOD_REF_DIR}/${BLOODSTREAM_FILE} -b ${IMG_REF_DIR}/${PET_JSON_FILE} -o ${PETSURFER_DIR}/aif.bloodstream.dat
