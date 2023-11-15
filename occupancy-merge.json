@@ -1,0 +1,74 @@
+{
+  "regions": 
+    {
+      "FrontalCortex": 
+      {
+        "labels": [1028, 2028, 1027, 2027, 1003, 2003, 1018, 2018, 1020, 2020, 1019, 2019, 1024, 2024, 1017, 2017, 1032, 2032],
+        "comments": "merges: superiorfrontal (1028, 2028), rostralmiddlefrontal (1027, 2027), caudalmiddlefrontal (1003, 2003), parsopercularis (1018, 2018), parstriangularis (1020, 2020), parsorbitalis (1019, 2019), precental (1024, 2024), paracentral (1017, 2017), frontalpole (1032, 2032).  See https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation"
+      },
+      "CingulateCortex":
+      {
+        "labels": [1026, 2026, 1002, 2002, 1023, 2023, 1010, 2010],
+        "comments": "merges: rostralanteriorcingulate (1026, 2026), caudalanteriorcingulate (1002, 2002), posteriorcingulate (1023, 2023), isthmuscingulate: (1010, 2010). See https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation"
+      },
+      "TemporalCortex":
+      {
+        "labels": [1009, 2009, 1015, 2015, 1030, 2030, 1007, 2007, 1034, 2034, 1006, 2006, 1033, 2033, 1016, 2016],
+        "comments": "merges: inferiortemporal (1009, 2009), middletemporal (1015, 2015), superiortemporal (1030, 2030), fusiform (1007, 2007), transversetemporal (1034, 2034), entorhinal (1006, 2006), temporalpole (1033, 2033), parahippocampal (1016, 2016). See https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation"
+      },
+      "OccipitalCortex":
+      {
+        "labels": [1011, 2011, 1013, 2013, 1005, 2005, 1021, 2021],
+        "comments": "merges: lateraloccipital (1011, 2011), lingual (1013, 2013), cuneus (1005, 2005) and pericalcarine (1021, 2021).  See https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation"
+      },
+      "ParietalCortex":
+      {
+        "labels": [1008, 2008, 1029, 2029, 1031, 2031, 1022, 2022, 1025, 2025],
+        "comments": "merges: inferiorparietal (1008, 2008), superiorparietal (1029, 2029), supramarginal (1031, 2031), postcentral (1022, 2022), precuneus (1025, 2025).  See https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation"
+      },
+      "Hippocampus":
+      {
+        "labels": [17, 53],
+        "comments": ""
+      },
+      "Amygdala":
+      {
+        "labels": [18, 54],
+        "comments": ""
+      },
+      "Thalamus":
+      {
+        "labels": [10, 49],
+        "comments": ""
+      },
+      "CorpusCallosum":
+      {
+        "labels": [251, 252, 253, 254, 255],
+        "comments": ""
+      },
+      "Insula":
+      {
+        "labels": [1035, 2035],
+        "comments": ""
+      },
+      "Cerebellum":
+      {
+        "labels": [8, 47],
+        "comments": "Not including Cerebellum White matter; thats another category that is ignored due to noise"
+      },      
+      "BrainStem":
+      {
+        "labels": [16],
+        "comments": ""
+      },
+      "WhiteMatter":
+      {
+        "labels": [2, 41],
+        "comments": ""
+      }
+   }
+}
+
+
+
+
