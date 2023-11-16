@@ -132,7 +132,55 @@ Run `cox1-proc` on each pet session, which:
   - Runs `mri_glmfit` to peform an Logan analysis
   - Maps the results ("Distribution Volume Ratio"; DVR) to fsaverage space
 
-## 6) Run `miba_gen.py`
+## 6) Compute Vnd via Lassen plot
+
+- Vnv is the y-intercept of the lassen plot
+- regions to use/merge is specified in `occupancy-merge.json`
+
+```
+export SUBJECTS_DIR=/home/paul/lcn/20230918-bloodstream-r/fs-subs
+export MERGE_DATA=/home/paul/lcn/git/miba/occupancy-merge.json
+export CALC_VND=/home/paul/lcn/git/miba/calc_vnd.py
+
+for SUBJECT in sub-PS50 sub-PS51 sub-PS52 sub-PS53 sub-PS54 sub-PS55 sub-PS56
+do
+    $CALC_VND \
+      -m $MERGE_DATA \
+      --seg-base $SUBJECTS_DIR/$SUBJECT/pet1/apas.nii.gz \
+      --dvr-base $SUBJECTS_DIR/$SUBJECT/pet1/glmfit.logan/dvr/gamma.nii.gz \
+      --seg-block $SUBJECTS_DIR/$SUBJECT/pet2/apas.nii.gz \
+      --dvr-block $SUBJECTS_DIR/$SUBJECT/pet2/glmfit.logan/dvr/gamma.nii.gz \
+      -o $SUBJECTS_DIR/$SUBJECT/pet-vnd.json \
+      -ofig $SUBJECTS_DIR/$SUBJECT/pet-vnd.png
+done
+```
+
+This generates the following values:
+
+| Subject   | Vnd                | Occupancy          |
+| ---------:| ------------------:| ------------------:|
+| sub-PS50  | 1.1319486599814665 | 0.7869641734671312 |
+| sub-PS51  | 1.1192285589034248 | 0.7959955315691787 |
+| sub-PS52  | 1.0496236020838752 | 0.7542152189502245 |
+| sub-PS53  | 1.153529523200513  | 0.8902525060612867 |
+| sub-PS54  | 1.5011441337708775 | 0.9089416391564102 |
+| sub-PS55  | 0.9736405141537436 | 0.6999053740530418 |
+| sub-PS56  | 1.2181914901342907 | 0.7805440613678035 |
+
+Values from Nafiseh:
+
+| Subject   | Vnd                | Occupancy          |
+| ---------:| ------------------:| ------------------:|
+| sub-PS50  | 1.446              | 0.8343             |
+| sub-PS51  | 1.349              | 0.8216             |
+| sub-PS52  | 1.197              | 0.8483             |
+| sub-PS53  | 1.112              | 0.9189             |
+| sub-PS54  | 2.326              | 0.988              |
+| sub-PS55  | 1.139              | 0.7026             |
+| sub-PS56  | 2.379              | 0.8267             |
+| sub-PS57  | 2.429              | 0.7932             |
+
+## 7) Run `miba_gen.py`
 
 ### To generate the average across the first session of all subjects
 
@@ -211,91 +259,148 @@ cd $SUBJECTS_DIR
    -o cox1.miba.fsaverage.rh.nii.gz
 ```
 
-### To generate the average difference between unblocked and blocked
+### To generate Vs (Vt - Vnd) for each baseline/blocked subject
 
-First generate the difference between unblocked and blocked for each subject:
-
-(*PW: I'm having trouble processing sub-PS50_sess-blocked for some reason, so that subject is currently excluded*)
+First generate Vs (Vt - Vnd) for each subject:
 
 ```
-cd $SUBJECTS_DIR
-for SUB in sub-PS51 sub-PS52 sub-PS53 sub-PS54 sub-PS55 sub-PS56
+export SUBJECTS_DIR=/home/paul/lcn/20230918-bloodstream-r/fs-subs
+SUB_LIST=(sub-PS50 sub-PS51 sub-PS52 sub-PS53 sub-PS54 sub-PS55 sub-PS56)
+VND_LIST=(1.446 1.349 1.197 1.112 2.326 1.139 2.379)
+
+for i in "${!SUB_LIST[@]}"
 do
+  SUB=${SUB_LIST[i]}
+  VND=${VND_LIST[i]}
+  echo $SUB $VND
   /home/paul/lcn/git/miba/miba_gen.py \
-    --diff \
-    -i ./${SUB}/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-       ./${SUB}/pet2/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-    -o cox1.${SUB}.diff.fsaverage.nii.gz
+    --diff-const \
+    -i ${SUBJECTS_DIR}/${SUB}/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+    -cv ${VND} \
+    -o cox1.${SUB}.vnd.fsaverage.nii.gz
+  /home/paul/lcn/git/miba/miba_gen.py \
+    --diff-const \
+    -i ${SUBJECTS_DIR}/${SUB}/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+    -cv ${VND} \
+    -o cox1.${SUB}.vnd.fsaverage.lh.nii.gz
+  /home/paul/lcn/git/miba/miba_gen.py \
+    --diff-const \
+    -i ${SUBJECTS_DIR}/${SUB}/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+    -cv ${VND} \
+    -o cox1.${SUB}.vnd.fsaverage.rh.nii.gz
 done
 ```
 
 Then average:
 ```
-cd $SUBJECTS_DIR
 /home/paul/lcn/git/miba/miba_gen.py \
   --mean \
-  -i cox1.sub-PS51.diff.fsaverage.nii.gz \
-     cox1.sub-PS52.diff.fsaverage.nii.gz \
-     cox1.sub-PS53.diff.fsaverage.nii.gz \
-     cox1.sub-PS54.diff.fsaverage.nii.gz \
-     cox1.sub-PS55.diff.fsaverage.nii.gz \
-     cox1.sub-PS56.diff.fsaverage.nii.gz \
-  -o cox1.miba.unblocked-vs-blocked.fsaverage.nii.gz
+  -i cox1.sub-PS50.vnd.fsaverage.nii.gz \
+     cox1.sub-PS51.vnd.fsaverage.nii.gz \
+     cox1.sub-PS52.vnd.fsaverage.nii.gz \
+     cox1.sub-PS53.vnd.fsaverage.nii.gz \
+     cox1.sub-PS54.vnd.fsaverage.nii.gz \
+     cox1.sub-PS55.vnd.fsaverage.nii.gz \
+     cox1.sub-PS56.vnd.fsaverage.nii.gz \
+  -o cox1.miba.vnd.fsaverage.nii.gz
 ```
 
-Repeat for surface overlays:
+```
+/home/paul/lcn/git/miba/miba_gen.py \
+  --mean \
+  -i cox1.sub-PS50.vnd.fsaverage.rh.nii.gz \
+     cox1.sub-PS51.vnd.fsaverage.rh.nii.gz \
+     cox1.sub-PS52.vnd.fsaverage.rh.nii.gz \
+     cox1.sub-PS53.vnd.fsaverage.rh.nii.gz \
+     cox1.sub-PS54.vnd.fsaverage.rh.nii.gz \
+     cox1.sub-PS55.vnd.fsaverage.rh.nii.gz \
+     cox1.sub-PS56.vnd.fsaverage.rh.nii.gz \
+  -o cox1.miba.vnd.fsaverage.rh.nii.gz
+```
 
 ```
-cd $SUBJECTS_DIR
-for SUB in sub-PS51 sub-PS52 sub-PS53 sub-PS54 sub-PS55 sub-PS56
+/home/paul/lcn/git/miba/miba_gen.py \
+  --mean \
+  -i cox1.sub-PS50.vnd.fsaverage.lh.nii.gz \
+     cox1.sub-PS51.vnd.fsaverage.lh.nii.gz \
+     cox1.sub-PS52.vnd.fsaverage.lh.nii.gz \
+     cox1.sub-PS53.vnd.fsaverage.lh.nii.gz \
+     cox1.sub-PS54.vnd.fsaverage.lh.nii.gz \
+     cox1.sub-PS55.vnd.fsaverage.lh.nii.gz \
+     cox1.sub-PS56.vnd.fsaverage.lh.nii.gz \
+  -o cox1.miba.vnd.fsaverage.lh.nii.gz
+```
+
+### To generate BPND (Vs / Vnd) for each baseline/blocked subject
+
+```
+SUB_LIST=(sub-PS50 sub-PS51 sub-PS52 sub-PS53 sub-PS54 sub-PS55 sub-PS56)
+VND_LIST=(1.446 1.349 1.197 1.112 2.326 1.139 2.379)
+
+for i in "${!SUB_LIST[@]}"
 do
+  SUB=${SUB_LIST[i]}
+  VND=${VND_LIST[i]}
+  echo $SUB $VND
   /home/paul/lcn/git/miba/miba_gen.py \
-    --diff \
-    -i ./${SUB}/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-       ./${SUB}/pet2/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-    -o cox1.${SUB}.diff.fsaverage.lh.nii.gz
+    --div-const \
+    -i cox1.${SUB}.vnd.fsaverage.nii.gz \
+    -cv ${VND} \
+    -o cox1.${SUB}.bpnd.fsaverage.nii.gz
+  /home/paul/lcn/git/miba/miba_gen.py \
+    --div-const \
+    -i cox1.${SUB}.vnd.fsaverage.lh.nii.gz \
+    -cv ${VND} \
+    -o cox1.${SUB}.bpnd.fsaverage.lh.nii.gz
+  /home/paul/lcn/git/miba/miba_gen.py \
+    --div-const \
+    -i cox1.${SUB}.vnd.fsaverage.rh.nii.gz \
+    -cv ${VND} \
+    -o cox1.${SUB}.bpnd.fsaverage.rh.nii.gz
 done
 ```
 
+Then average:
 ```
-cd $SUBJECTS_DIR
-for SUB in sub-PS51 sub-PS52 sub-PS53 sub-PS54 sub-PS55 sub-PS56
-do
-  /home/paul/lcn/git/miba/miba_gen.py \
-    --diff \
-    -i ./${SUB}/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-       ./${SUB}/pet2/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-    -o cox1.${SUB}.diff.fsaverage.rh.nii.gz
-done
-```
-
-```
-cd $SUBJECTS_DIR
 /home/paul/lcn/git/miba/miba_gen.py \
   --mean \
-  -i cox1.sub-PS51.diff.fsaverage.rh.nii.gz \
-     cox1.sub-PS52.diff.fsaverage.rh.nii.gz \
-     cox1.sub-PS53.diff.fsaverage.rh.nii.gz \
-     cox1.sub-PS54.diff.fsaverage.rh.nii.gz \
-     cox1.sub-PS55.diff.fsaverage.rh.nii.gz \
-     cox1.sub-PS56.diff.fsaverage.rh.nii.gz \
-  -o cox1.miba.unblocked-vs-blocked.fsaverage.rh.nii.gz
+  -i cox1.sub-PS50.bpnd.fsaverage.nii.gz \
+     cox1.sub-PS51.bpnd.fsaverage.nii.gz \
+     cox1.sub-PS52.bpnd.fsaverage.nii.gz \
+     cox1.sub-PS53.bpnd.fsaverage.nii.gz \
+     cox1.sub-PS54.bpnd.fsaverage.nii.gz \
+     cox1.sub-PS55.bpnd.fsaverage.nii.gz \
+     cox1.sub-PS56.bpnd.fsaverage.nii.gz \
+  -o cox1.miba.bpnd.fsaverage.nii.gz
 ```
 
 ```
-cd $SUBJECTS_DIR
 /home/paul/lcn/git/miba/miba_gen.py \
   --mean \
-  -i cox1.sub-PS51.diff.fsaverage.lh.nii.gz \
-     cox1.sub-PS52.diff.fsaverage.lh.nii.gz \
-     cox1.sub-PS53.diff.fsaverage.lh.nii.gz \
-     cox1.sub-PS54.diff.fsaverage.lh.nii.gz \
-     cox1.sub-PS55.diff.fsaverage.lh.nii.gz \
-     cox1.sub-PS56.diff.fsaverage.lh.nii.gz \
-  -o cox1.miba.unblocked-vs-blocked.fsaverage.lh.nii.gz
+  -i cox1.sub-PS50.bpnd.fsaverage.rh.nii.gz \
+     cox1.sub-PS51.bpnd.fsaverage.rh.nii.gz \
+     cox1.sub-PS52.bpnd.fsaverage.rh.nii.gz \
+     cox1.sub-PS53.bpnd.fsaverage.rh.nii.gz \
+     cox1.sub-PS54.bpnd.fsaverage.rh.nii.gz \
+     cox1.sub-PS55.bpnd.fsaverage.rh.nii.gz \
+     cox1.sub-PS56.bpnd.fsaverage.rh.nii.gz \
+  -o cox1.miba.bpnd.fsaverage.rh.nii.gz
 ```
 
-## 6) Generate figures
+```
+/home/paul/lcn/git/miba/miba_gen.py \
+  --mean \
+  -i cox1.sub-PS50.bpnd.fsaverage.lh.nii.gz \
+     cox1.sub-PS51.bpnd.fsaverage.lh.nii.gz \
+     cox1.sub-PS52.bpnd.fsaverage.lh.nii.gz \
+     cox1.sub-PS53.bpnd.fsaverage.lh.nii.gz \
+     cox1.sub-PS54.bpnd.fsaverage.lh.nii.gz \
+     cox1.sub-PS55.bpnd.fsaverage.lh.nii.gz \
+     cox1.sub-PS56.bpnd.fsaverage.lh.nii.gz \
+  -o cox1.miba.bpnd.fsaverage.lh.nii.gz
+```
+
+## 8) Generate figures
 
 ### Figures of the average across the first session of all subjects
 
@@ -341,48 +446,92 @@ freeview \
   --screenshot ./lh.mean.inflated.png 2 true
 ```
 
-### Figures of the average across (unblocked - blocked)
+### Figures of the average Vs across unblocked/blocked subjects
 
 ```
 freeview \
   --volume \
     ${FREESURFER_HOME}/subjects/fsaverage/mri/orig.mgz \
-    ${SUBJECTS_DIR}/cox1.miba.unblocked-vs-blocked.fsaverage.nii.gz:colormap=heat:opacity=0.5:heatscale=0.0,1.4,2.8:heatscale_options=truncate \
+    cox1.miba.vnd.fsaverage.nii.gz:colormap=heat:opacity=0.5:heatscale=0.0,1.9,3.8:heatscale_options=truncate \
   --ras 0 -10 0 \
   --cc \
   --viewport axial \
   --colorscale \
-  --screenshot ./axial.mean.unblocked-vs-blocked.png 2 true
+  --screenshot ./axial.mean.vs.png 2 true
 ```
 
 ```
 freeview \
   --volume \
     ${FREESURFER_HOME}/subjects/fsaverage/mri/orig.mgz \
-    ${SUBJECTS_DIR}/cox1.miba.unblocked-vs-blocked.fsaverage.nii.gz:colormap=heat:opacity=0.5:heatscale=0.0,1.4,2.8:heatscale_options=truncate \
+    cox1.miba.vnd.fsaverage.nii.gz:colormap=heat:opacity=0.5:heatscale=0.0,1.9,3.8:heatscale_options=truncate \
   --ras 0 -10 0 \
   --cc \
   --viewport sagittal \
   --colorscale \
-  --screenshot ./sagittal.mean.unblocked-vs-blocked.png 2 true
+  --screenshot ./sagittal.mean.vs.png 2 true
 ```
 
 ```
 freeview \
   --surface \
-    ${FREESURFER_HOME}/subjects/fsaverage/surf/lh.white:overlay=${SUBJECTS_DIR}/cox1.miba.unblocked-vs-blocked.fsaverage.lh.nii.gz:overlay_threshold=0.00,2.80:overlay_color=heat,truncate:annot=${FREESURFER_HOME}/subjects/fsaverage/label/lh.aparc.annot:annot_outline=1 \
+    ${FREESURFER_HOME}/subjects/fsaverage/surf/lh.white:overlay=cox1.miba.vnd.fsaverage.lh.nii.gz:overlay_threshold=0.00,2.80:overlay_color=heat,truncate:annot=${FREESURFER_HOME}/subjects/fsaverage/label/lh.aparc.annot:annot_outline=1 \
   --viewport 3d \
   --colorscale \
-  --screenshot ./lh.mean.white.unblocked-vs-blocked.png 2 true
+  --screenshot ./lh.mean.white.vs.png 2 true
 ```
 
 ```
 freeview \
   --surface \
-    ${FREESURFER_HOME}/subjects/fsaverage/surf/lh.inflated:overlay=${SUBJECTS_DIR}/cox1.miba.unblocked-vs-blocked.fsaverage.lh.nii.gz:overlay_threshold=0.00,2.80:overlay_color=heat,truncate:annot=${FREESURFER_HOME}/subjects/fsaverage/label/lh.aparc.annot:annot_outline=1 \
+    ${FREESURFER_HOME}/subjects/fsaverage/surf/lh.inflated:overlay=cox1.miba.vnd.fsaverage.lh.nii.gz:overlay_threshold=0.00,2.80:overlay_color=heat,truncate:annot=${FREESURFER_HOME}/subjects/fsaverage/label/lh.aparc.annot:annot_outline=1 \
   --viewport 3d \
   --colorscale \
-  --screenshot ./lh.mean.inflated.unblocked-vs-blocked.png 2 true
+  --screenshot ./lh.mean.inflated.vs.png 2 true
+```
+
+### Figures of the average BOND across unblocked/blocked subjects
+
+```
+freeview \
+  --volume \
+    ${FREESURFER_HOME}/subjects/fsaverage/mri/orig.mgz:grayscale=30,150 \
+    cox1.miba.bpnd.fsaverage.nii.gz:colormap=heat:opacity=0.5:heatscale=0.0,1.3,2.6:heatscale_options=truncate \
+  --ras 0 -10 0 \
+  --cc \
+  --viewport axial \
+  --colorscale \
+  --screenshot ./axial.mean.bpnd.png 2 true
+```
+
+```
+freeview \
+  --volume \
+    ${FREESURFER_HOME}/subjects/fsaverage/mri/orig.mgz:grayscale=30,150 \
+    cox1.miba.vnd.fsaverage.nii.gz:colormap=heat:opacity=0.5:heatscale=0.0,1.3,2.6:heatscale_options=truncate \
+  --ras 0 -10 0 \
+  --cc \
+  --viewport sagittal \
+  --colorscale \
+  --screenshot ./sagittal.mean.bpnd.png 2 true
+```
+
+```
+freeview \
+  --surface \
+    ${FREESURFER_HOME}/subjects/fsaverage/surf/lh.white:overlay=cox1.miba.bpnd.fsaverage.lh.nii.gz:overlay_threshold=0.50,1.50:overlay_color=heat,truncate:annot=${FREESURFER_HOME}/subjects/fsaverage/label/lh.aparc.annot:annot_outline=1 \
+  --viewport 3d \
+  --colorscale \
+  --screenshot ./lh.mean.white.bpnd.png 2 true
+```
+
+```
+freeview \
+  --surface \
+    ${FREESURFER_HOME}/subjects/fsaverage/surf/lh.inflated:overlay=cox1.miba.bpnd.fsaverage.lh.nii.gz:overlay_threshold=0.50,1.50:overlay_color=heat,truncate:annot=${FREESURFER_HOME}/subjects/fsaverage/label/lh.aparc.annot:annot_outline=1 \
+  --viewport 3d \
+  --colorscale \
+  --screenshot ./lh.mean.inflated.bpnd.png 2 true
 ```
 
 ## References
