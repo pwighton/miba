@@ -134,7 +134,7 @@ Run `cox1-proc` on each pet session, which:
 
 ## 6) Compute Vnd via Lassen plot
 
-- Vnv is the y-intercept of the lassen plot
+- Vnv is the x-intercept of the lassen plot
 - regions to use/merge is specified in `occupancy-merge.json`
 
 ```
