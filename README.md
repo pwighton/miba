@@ -150,8 +150,8 @@ do
       --dvr-base $SUBJECTS_DIR/$SUBJECT/pet1/glmfit.logan/dvr/gamma.nii.gz \
       --seg-block $SUBJECTS_DIR/$SUBJECT/pet2/apas.nii.gz \
       --dvr-block $SUBJECTS_DIR/$SUBJECT/pet2/glmfit.logan/dvr/gamma.nii.gz \
-      -o $SUBJECTS_DIR/$SUBJECT/pet-vnd.json \
-      -ofig $SUBJECTS_DIR/$SUBJECT/pet-vnd.png
+      -o $SUBJECTS_DIR/$SUBJECT/pet-lassen.json \
+      -ofig $SUBJECTS_DIR/$SUBJECT/pet-lassen.png
 done
 ```
 
@@ -186,52 +186,54 @@ Values from Nafiseh:
 
 In volumetric space:
 ```
-cd $SUBJECTS_DIR
+export SUBJECTS_DIR=/home/paul/lcn/20230918-bloodstream-r/fs-subs
+
 /home/paul/lcn/git/miba/miba_gen.py \
   --mean \
-  -i ./sub-PS39/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS56/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS28/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS54/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS52/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS53/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS51/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS19/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS42/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS21/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS24/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS26/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS55/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS27/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS38/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS20/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-     ./sub-PS50/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-   -o cox1.miba.fsaverage.nii.gz
+  -i ${SUBJECTS_DIR}/sub-PS19/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS20/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS21/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS24/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS26/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS27/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS28/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS38/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS39/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS42/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS50/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS51/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS52/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS53/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS54/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS55/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS56/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
+   -o cox1.vt.fsaverage.nii.gz
 ```
 
 On the surface of the left hemisphere
 ```
-cd $SUBJECTS_DIR
+export SUBJECTS_DIR=/home/paul/lcn/20230918-bloodstream-r/fs-subs
+
 /home/paul/lcn/git/miba/miba_gen.py \
   --mean \
-  -i ./sub-PS39/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS56/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS28/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS54/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS52/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS53/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS51/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS19/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS42/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS21/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS24/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS26/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS55/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS27/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS38/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS20/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-     ./sub-PS50/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-   -o cox1.miba.fsaverage.lh.nii.gz
+  -i ${SUBJECTS_DIR}/sub-PS19/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS20/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS21/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS24/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS26/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS27/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS28/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS38/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS39/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS42/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS50/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS51/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS52/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS53/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS54/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS55/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS56/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
+   -o cox1.vt.fsaverage.lh.nii.gz
 ```
 
 On the surface of the right hemisphere
@@ -239,24 +241,24 @@ On the surface of the right hemisphere
 cd $SUBJECTS_DIR
 /home/paul/lcn/git/miba/miba_gen.py \
   --mean \
-  -i ./sub-PS39/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS56/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS28/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS54/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS52/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS53/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS51/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS19/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS42/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS21/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS24/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS26/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS55/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS27/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS38/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS20/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-     ./sub-PS50/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-   -o cox1.miba.fsaverage.rh.nii.gz
+  -i ${SUBJECTS_DIR}/sub-PS19/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS20/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS21/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS24/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS26/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS27/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS28/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS38/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS39/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS42/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS50/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS51/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS52/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS53/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS54/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS55/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+     ${SUBJECTS_DIR}/sub-PS56/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
+   -o cox1.vt.fsaverage.rh.nii.gz
 ```
 
 ### To generate Vs (Vt - Vnd) for each baseline/blocked subject
@@ -408,42 +410,42 @@ Then average:
 freeview \
   --volume \
     ${FREESURFER_HOME}/subjects/fsaverage/mri/orig.mgz \
-    ${SUBJECTS_DIR}/cox1.miba.fsaverage.nii.gz:colormap=heat:opacity=0.5:heatscale=1.8,2.3,2.8:heatscale_options=truncate \
+    cox1.vt.fsaverage.nii.gz:colormap=heat:opacity=0.5:heatscale=1.8,2.3,2.8:heatscale_options=truncate \
   --ras 0 -10 0 \
   --cc \
   --viewport axial \
   --colorscale \
-  --screenshot ./axial.mean.png 2 true
+  --screenshot ./cox1.miba.vt.axial.mean.png 2 true
 ```
 
 ```
 freeview \
   --volume \
     ${FREESURFER_HOME}/subjects/fsaverage/mri/orig.mgz \
-    ${SUBJECTS_DIR}/cox1.miba.fsaverage.nii.gz:colormap=heat:opacity=0.5:heatscale=1.8,2.3,2.8:heatscale_options=truncate \
+    cox1.vt.fsaverage.nii.gz:colormap=heat:opacity=0.5:heatscale=1.8,2.3,2.8:heatscale_options=truncate \
   --ras 0 -10 0 \
   --cc \
   --viewport sagittal \
   --colorscale \
-  --screenshot ./sagittal.mean.png 2 true
+  --screenshot ./cox1.miba.vt.sagittal.mean.png 2 true
 ```
 
 ```
 freeview \
   --surface \
-    ${FREESURFER_HOME}/subjects/fsaverage/surf/lh.white:overlay=${SUBJECTS_DIR}/cox1.miba.fsaverage.lh.nii.gz:overlay_threshold=1.80,2.80:overlay_color=heat,truncate:annot=${FREESURFER_HOME}/subjects/fsaverage/label/lh.aparc.annot:annot_outline=1 \
+    ${FREESURFER_HOME}/subjects/fsaverage/surf/lh.white:overlay=cox1.vt.fsaverage.lh.nii.gz:overlay_threshold=1.80,2.80:overlay_color=heat,truncate:annot=${FREESURFER_HOME}/subjects/fsaverage/label/lh.aparc.annot:annot_outline=1 \
   --viewport 3d \
   --colorscale \
-  --screenshot ./lh.mean.white.png 2 true
+  --screenshot ./cox1.miba.vt.lh.mean.white.png 2 true
 ```
 
 ```
 freeview \
   --surface \
-    ${FREESURFER_HOME}/subjects/fsaverage/surf/lh.inflated:overlay=${SUBJECTS_DIR}/cox1.miba.fsaverage.lh.nii.gz:overlay_threshold=1.80,2.80:overlay_color=heat,truncate:annot=${FREESURFER_HOME}/subjects/fsaverage/label/lh.aparc.annot:annot_outline=1 \
+    ${FREESURFER_HOME}/subjects/fsaverage/surf/lh.inflated:overlay=cox1.vt.fsaverage.lh.nii.gz:overlay_threshold=1.80,2.80:overlay_color=heat,truncate:annot=${FREESURFER_HOME}/subjects/fsaverage/label/lh.aparc.annot:annot_outline=1 \
   --viewport 3d \
   --colorscale \
-  --screenshot ./lh.mean.inflated.png 2 true
+  --screenshot ./cox1.miba.vt.lh.mean.inflated.png 2 true
 ```
 
 ### Figures of the average Vs across unblocked/blocked subjects
@@ -457,7 +459,7 @@ freeview \
   --cc \
   --viewport axial \
   --colorscale \
-  --screenshot ./axial.mean.vs.png 2 true
+  --screenshot ./cox1.miba.vs.axial.meanpng 2 true
 ```
 
 ```
@@ -469,7 +471,7 @@ freeview \
   --cc \
   --viewport sagittal \
   --colorscale \
-  --screenshot ./sagittal.mean.vs.png 2 true
+  --screenshot ./cox1.miba.vs.sagittal.mean.png 2 true
 ```
 
 ```
@@ -478,7 +480,7 @@ freeview \
     ${FREESURFER_HOME}/subjects/fsaverage/surf/lh.white:overlay=cox1.miba.vnd.fsaverage.lh.nii.gz:overlay_threshold=0.00,2.80:overlay_color=heat,truncate:annot=${FREESURFER_HOME}/subjects/fsaverage/label/lh.aparc.annot:annot_outline=1 \
   --viewport 3d \
   --colorscale \
-  --screenshot ./lh.mean.white.vs.png 2 true
+  --screenshot ./cox1.miba.vs.lh.white.png 2 true
 ```
 
 ```
@@ -487,7 +489,7 @@ freeview \
     ${FREESURFER_HOME}/subjects/fsaverage/surf/lh.inflated:overlay=cox1.miba.vnd.fsaverage.lh.nii.gz:overlay_threshold=0.00,2.80:overlay_color=heat,truncate:annot=${FREESURFER_HOME}/subjects/fsaverage/label/lh.aparc.annot:annot_outline=1 \
   --viewport 3d \
   --colorscale \
-  --screenshot ./lh.mean.inflated.vs.png 2 true
+  --screenshot ./cox1.miba.vs.lh.inflated.png 2 true
 ```
 
 ### Figures of the average BOND across unblocked/blocked subjects
@@ -501,7 +503,7 @@ freeview \
   --cc \
   --viewport axial \
   --colorscale \
-  --screenshot ./axial.mean.bpnd.png 2 true
+  --screenshot ./cox1.miba.bpnd.axial.mean.png 2 true
 ```
 
 ```
@@ -513,7 +515,7 @@ freeview \
   --cc \
   --viewport sagittal \
   --colorscale \
-  --screenshot ./sagittal.mean.bpnd.png 2 true
+  --screenshot ./cox1.miba.bpnd.sagittal.mean.png 2 true
 ```
 
 ```
@@ -522,7 +524,7 @@ freeview \
     ${FREESURFER_HOME}/subjects/fsaverage/surf/lh.white:overlay=cox1.miba.bpnd.fsaverage.lh.nii.gz:overlay_threshold=0.50,1.50:overlay_color=heat,truncate:annot=${FREESURFER_HOME}/subjects/fsaverage/label/lh.aparc.annot:annot_outline=1 \
   --viewport 3d \
   --colorscale \
-  --screenshot ./lh.mean.white.bpnd.png 2 true
+  --screenshot ./cox1.miba.bpnd.lh.white.png 2 true
 ```
 
 ```
@@ -531,7 +533,7 @@ freeview \
     ${FREESURFER_HOME}/subjects/fsaverage/surf/lh.inflated:overlay=cox1.miba.bpnd.fsaverage.lh.nii.gz:overlay_threshold=0.50,1.50:overlay_color=heat,truncate:annot=${FREESURFER_HOME}/subjects/fsaverage/label/lh.aparc.annot:annot_outline=1 \
   --viewport 3d \
   --colorscale \
-  --screenshot ./lh.mean.inflated.bpnd.png 2 true
+  --screenshot ./cox1.miba.bpnd.lh.inflated.png 2 true
 ```
 
 ## References
