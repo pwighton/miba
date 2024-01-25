@@ -134,7 +134,7 @@ Run `cox1-proc` on each pet session, which:
 
 ## 6) Compute Vnd via Lassen plot
 
-- Vnv is the x-intercept of the lassen plot
+- Vnd is the x-intercept of the lassen plot
 - regions to use/merge is specified in `occupancy-merge.json`
 
 ```
@@ -207,7 +207,7 @@ export SUBJECTS_DIR=/home/paul/lcn/20230918-bloodstream-r/fs-subs
      ${SUBJECTS_DIR}/sub-PS54/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
      ${SUBJECTS_DIR}/sub-PS55/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
      ${SUBJECTS_DIR}/sub-PS56/pet1/glmfit.logan/dvr/dvr.fsaverage.nii.gz \
-   -o cox1.vt.fsaverage.nii.gz
+   -o cox1.miba.vt.fsaverage.nii.gz
 ```
 
 On the surface of the left hemisphere
@@ -233,7 +233,7 @@ export SUBJECTS_DIR=/home/paul/lcn/20230918-bloodstream-r/fs-subs
      ${SUBJECTS_DIR}/sub-PS54/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
      ${SUBJECTS_DIR}/sub-PS55/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
      ${SUBJECTS_DIR}/sub-PS56/pet1/glmfit.logan/dvr/dvr.fsaverage.lh.nii.gz \
-   -o cox1.vt.fsaverage.lh.nii.gz
+   -o cox1.miba.vt.fsaverage.lh.nii.gz
 ```
 
 On the surface of the right hemisphere
@@ -258,7 +258,7 @@ cd $SUBJECTS_DIR
      ${SUBJECTS_DIR}/sub-PS54/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
      ${SUBJECTS_DIR}/sub-PS55/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
      ${SUBJECTS_DIR}/sub-PS56/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-   -o cox1.vt.fsaverage.rh.nii.gz
+   -o cox1.miba .vt.fsaverage.rh.nii.gz
 ```
 
 ### To generate Vs (Vt - Vnd) for each baseline/blocked subject
@@ -492,13 +492,13 @@ freeview \
   --screenshot ./cox1.miba.vs.lh.inflated.png 2 true
 ```
 
-### Figures of the average BOND across unblocked/blocked subjects
+### Figures of the average BPND across unblocked/blocked subjects
 
 ```
 freeview \
   --volume \
     ${FREESURFER_HOME}/subjects/fsaverage/mri/orig.mgz:grayscale=30,150 \
-    cox1.miba.bpnd.fsaverage.nii.gz:colormap=heat:opacity=0.5:heatscale=0.0,1.3,2.6:heatscale_options=truncate \
+    cox1.miba.bpnd.fsaverage.nii.gz:colormap=nih:colorscale=0.0,4.0 \
   --ras 0 -10 0 \
   --cc \
   --viewport axial \
