@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # To submit:
-# sbatch --job-name=cox_recon --output=cox_recon_%j.out --mail-type=END,FAIL ./mlsc-recon-all.bash
+# sbatch --job-name=cox2_recon --output=cox2_recon_%j.out --mail-type=END,FAIL ./mlsc-recon-all.bash
 
 #SBATCH --account=fsm
 #SBATCH --partition=basic
@@ -13,11 +13,11 @@
 #SBATCH --output=slurm-%A_%a.out
 
 # PW match the 7 with `wc -l ${SUB_LIST}`
-#SBATCH --array=1-7%7
+#SBATCH --array=1-27%7
 
 export SUBJECTS_DIR=/autofs/vast/gerenuk/pwighton/pet/ds004869/fs-subs
 export FREESURFER_HOME=/usr/local/freesurfer/dev
-export MNI152REG_FNIRT=/autofs/vast/gerenuk/pwighton/pet/mni152reg.fnirt
+export MNI152REG_FNIRT=/autofs/vast/gerenuk/pwighton/pet/miba/mni152reg.fnirt
 
 source $FREESURFER_HOME/SetUpFreeSurfer.sh
 
