@@ -258,7 +258,7 @@ cd $SUBJECTS_DIR
      ${SUBJECTS_DIR}/sub-PS54/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
      ${SUBJECTS_DIR}/sub-PS55/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
      ${SUBJECTS_DIR}/sub-PS56/pet1/glmfit.logan/dvr/dvr.fsaverage.rh.nii.gz \
-   -o cox1.miba .vt.fsaverage.rh.nii.gz
+   -o cox1.miba.vt.fsaverage.rh.nii.gz
 ```
 
 ### To generate Vs (Vt - Vnd) for each baseline/blocked subject
