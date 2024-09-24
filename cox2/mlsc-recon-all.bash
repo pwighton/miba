@@ -3,6 +3,9 @@
 # To submit:
 # sbatch --job-name=cox2_recon --output=cox2_recon_%j.out --mail-type=END,FAIL ./mlsc-recon-all.bash
 
+# To monitor:
+# squeue | grep <username>
+
 #SBATCH --account=fsm
 #SBATCH --partition=basic
 #SBATCH --nodes=1
