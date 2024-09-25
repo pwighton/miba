@@ -10,7 +10,7 @@
 #SBATCH --partition=basic
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=32
+#SBATCH --cpus-per-task=16
 #SBATCH --mem=64G
 #SBATCH --time=0-24:00:00
 #SBATCH --output=slurm-%A_%a.out
@@ -20,7 +20,7 @@ OUTPUT_DIR=/autofs/vast/gerenuk/pwighton/pet/ds004869/petprep-output
 FS_LICENSE=/autofs/vast/freesurfer/centos7_x86_64/dev/.license
 SINGULARITY_CONTAINER=/autofs/vast/gerenuk/pwighton/pet/petprep_hmc_0.0.8.sif
 # match to `SBATCH --cpus-per-task` above
-NUM_PROCS=32
+NUM_PROCS=16
 
 # Make sure $SINGULARITY_TMPDIR is a local drive 
 # - `/scratch` is local on mlsc
