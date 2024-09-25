@@ -1,0 +1,4 @@
+/autofs/vast/gerenuk/pwighton/pet/ds004869/ds004869-download/sub-11/anat/sub-11_T1w.nii.gz sub-11
+/autofs/vast/gerenuk/pwighton/pet/ds004869/ds004869-download/sub-12/anat/sub-12_T1w.nii.gz sub-12
+/autofs/vast/gerenuk/pwighton/pet/ds004869/ds004869-download/sub-15/anat/sub-15_T1w.nii.gz sub-15
+/autofs/vast/gerenuk/pwighton/pet/ds004869/ds004869-download/sub-16/anat/sub-16_T1w.nii.gz sub-16
