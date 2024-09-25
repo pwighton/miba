@@ -26,8 +26,8 @@ NUM_PROCS=16
 # - `/scratch` is local on mlsc
 # - `/scratch/${SLURM_JOBID}` is automatically created when the job starts
 # - see https://it.martinos.org/mlsc-cluster/
-singularity_temp_dir=$(mktemp -d -p /scratch/${SLURM_JOBID} singularity.temp)
-export SINGULARITY_TMPDIR=$singularity_temp_dir
+singularity_temp_dir=$(mktemp -d -p /scratch/${SLURM_JOBID} singularity.XXXXXX)
+export SINGULARITY_TMPDIR=${singularity_temp_dir}
 
 echo "INPUT_DIR:              "${INPUT_DIR}
 echo "OUTPUT_DIR:             "${OUTPUT_DIR}
@@ -35,6 +35,7 @@ echo "FS_LICENSE_FILE:        "${FS_LICENSE}
 echo "SINGULARITY_CONTAINER:  "${SINGULARITY_CONTAINER}
 echo "SINGULARITY_TMPDIR:     "${SINGULARITY_TMPDIR}
 echo "NUM_PROCS:              "${NUM_PROCS}
+echo "SLURM_JOBID:            "${SLURM_JOBID}
 
 singularity run \
     -B ${INPUT_DIR}:/data/input \
