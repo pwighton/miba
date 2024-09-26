@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # To submit:
-# sbatch --job-name=petprep --output=petprep_%j.out --mail-type=END,FAIL ./mlsc-petprep-hmc-ds004733.bash
+# sbatch --job-name=petprep4733 --output=petprep4733_%j.out --mail-type=END,FAIL ./mlsc-petprep-hmc-ds004733.bash
 
 # To monitor:
 # squeue | grep <username>

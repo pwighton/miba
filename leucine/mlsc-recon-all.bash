@@ -16,7 +16,7 @@
 #SBATCH --output=slurm-%A_%a.out
 
 # PW match the 63 with `wc -l ${SUB_LIST}`
-#SBATCH --array=1-63%10
+#SBATCH --array=1-63%9
 
 export SUBJECTS_DIR=/autofs/vast/gerenuk/pwighton/pet/leucine/fs-subs
 export FREESURFER_HOME=/usr/local/freesurfer/dev
