@@ -7,6 +7,12 @@
 #  - pet imaging timeseries file
 #  - bloodstram file  
 
+# Make sure this is run in a python env that has
+# - numpy
+# - scipy
+# - pandas
+# e.g. `conda activate petblood`
+
 MAP_FILE="cox2-preproc-mapping.txt"
 
 SUBJECTS_DIR="/autofs/vast/gerenuk/pwighton/pet/ds004869/fs-subs"
@@ -31,8 +37,9 @@ echo "IMG_REF_DIR:          "$IMG_REF_DIR
 echo "MOCO_REF_DIR:         "$MOCO_REF_DIR
 echo "BLOOD_REF_DIR:        "$BLOOD_REF_DIR
 
-#NUM_LINES=$(cat $MAP_FILE|wc -l)
-NUM_LINES=1
+#NUM_LINES=1
+NUM_LINES=$(cat $MAP_FILE|wc -l)
+
 for LINE_NUM in $(seq $NUM_LINES)
 do
     SUB_NAME=$(cat $MAP_FILE| sed -n "${LINE_NUM}p" | awk '{print $1}')
@@ -54,20 +61,20 @@ do
     echo "PETSURFER_DIR:    "$PETSURFER_DIR 
     
     echo "rm -rf ${PETSURFER_DIR}"
-    #rm -rf ${PETSURFER_DIR}
+    rm -rf ${PETSURFER_DIR}
 
     echo "mkdir -p ${PETSURFER_DIR}"
-    #mkdir -p ${PETSURFER_DIR}
+    mkdir -p ${PETSURFER_DIR}
 
     echo "jq '.FrameTimesStart[]' ${IMG_REF_DIR}/${PET_JSON_FILE} > ${PETSURFER_DIR}/tsec.txt"
-    #jq '.FrameTimesStart[]' ${IMG_REF_DIR}/${PET_JSON_FILE} > ${PETSURFER_DIR}/tsec.txt
+    jq '.FrameTimesStart[]' ${IMG_REF_DIR}/${PET_JSON_FILE} > ${PETSURFER_DIR}/tsec.txt
 
     echo "cp ${MOCO_REF_DIR}/${PET_MOCO_FILE} ${PETSURFER_DIR}/pet.nii.gz"
-    #cp ${MOCO_REF_DIR}/${PET_MOCO_FILE} ${PETSURFER_DIR}/pet.nii.gz
+    cp ${MOCO_REF_DIR}/${PET_MOCO_FILE} ${PETSURFER_DIR}/pet.nii.gz
 
     echo "mri_concat ${PETSURFER_DIR}/pet.nii.gz --mean --o ${PETSURFER_DIR}/pet.mn.nii.gz"
-    #mri_concat ${PETSURFER_DIR}/pet.nii.gz --mean --o ${PETSURFER_DIR}/pet.mn.nii.gz
+    mri_concat ${PETSURFER_DIR}/pet.nii.gz --mean --o ${PETSURFER_DIR}/pet.mn.nii.gz
 
     echo "${CALC_FRAMEWISE_AIF_PY} -a ${BLOOD_REF_DIR}/${BLOODSTREAM_FILE} -b ${IMG_REF_DIR}/${PET_JSON_FILE} -o ${PETSURFER_DIR}/aif.bloodstream.dat"
-    #${CALC_FRAMEWISE_AIF_PY} -a ${BLOOD_REF_DIR}/${BLOODSTREAM_FILE} -b ${IMG_REF_DIR}/${PET_JSON_FILE} -o ${PETSURFER_DIR}/aif.bloodstream.dat
+    ${CALC_FRAMEWISE_AIF_PY} -a ${BLOOD_REF_DIR}/${BLOODSTREAM_FILE} -b ${IMG_REF_DIR}/${PET_JSON_FILE} -o ${PETSURFER_DIR}/aif.bloodstream.dat
 done
