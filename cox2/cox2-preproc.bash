@@ -32,7 +32,7 @@ echo "MOCO_REF_DIR:         "$MOCO_REF_DIR
 echo "BLOOD_REF_DIR:        "$BLOOD_REF_DIR
 
 #NUM_LINES=$(cat $MAP_FILE|wc -l)
-NUM_LINES = 1
+NUM_LINES=1
 for LINE_NUM in $(seq $NUM_LINES)
 do
     SUB_NAME=$(cat $MAP_FILE| sed -n "${LINE_NUM}p" | awk '{print $1}')
