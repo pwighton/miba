@@ -12,6 +12,8 @@ def parse_args():
     op = parser.add_mutually_exclusive_group()
     op.add_argument('--mean', action='store_const', dest='op', const='mean', default='mean',
                     help='Take the mean of the files in --in-files (default)')
+    op.add_argument('--std', action='store_const', dest='op', const='std',
+                    help='Take the standard deviation of the files in --in-files')    
     op.add_argument('--diff', action='store_const', dest='op', const='diff',
                     help='Take the difference (all files after the first in --in-files is subtracted from the first)')
     op.add_argument('--diff-const', action='store_const', dest='op', const='diff-const',
@@ -43,6 +45,39 @@ def mean(in_files, out_file):
     
     print("writing", out_file)
     nb.save(mean_vol, out_file)
+
+def std(in_files, out_file):
+    num_files = len(in_files)
+    if out_file is None:
+        out_file="out.nii.gz"
+        
+    print("num_files: ", num_files)
+    print("out_file:  ", out_file)
+    
+    cumulative_data = None
+    for file in in_files:
+        print("loading", file)
+        vol = nb.load(file)
+        if cumulative_data is None:
+            cumulative_data = np.array(vol.dataobj)
+        else:
+            cumulative_data = cumulative_data + np.array(vol.dataobj)
+    mean_data = cumulative_data / num_files
+
+    cumulative_data = None
+    for file in in_files:
+        print("loading", file)
+        vol = nb.load(file)
+        if cumulative_data is None:
+            cumulative_data = (np.array(vol.dataobj) - mean_data)**2
+        else:
+            cumulative_data = cumulative_data + (np.array(vol.dataobj) - mean_data)**2
+    std_data = np.sqrt(cumulative_data / num_files)
+    
+    std_vol = nb.nifti1.Nifti1Image(std_data, None, header=vol.header.copy())
+    
+    print("writing", out_file)
+    nb.save(std_vol, out_file)
 
 def diff(in_files, out_file):
     num_files = len(in_files)
@@ -109,6 +144,8 @@ def main():
     
     if (args.op=='mean'):
         mean(args.in_files, args.out_file)
+    if (args.op=='std'):
+        std(args.in_files, args.out_file)        
     elif (args.op=='diff'):
         diff(args.in_files, args.out_file)
     elif (args.op=='diff-const'):
