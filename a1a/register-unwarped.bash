@@ -12,8 +12,8 @@ OUT_DIR=/autofs/vast/gerenuk/pwighton/pet/a1a/pet-register/unwarped
 
 source $FREESURFER_HOME/SetUpFreeSurfer.sh
 
-#PET_LIST=/autofs/vast/gerenuk/pwighton/pet/a1a/sub-list-pet.txt
-PET_LIST=/autofs/vast/gerenuk/pwighton/pet/a1a/sub-list-pet-single-subject.txt
+PET_LIST=/autofs/vast/gerenuk/pwighton/pet/a1a/sub-list-pet.txt
+#PET_LIST=/autofs/vast/gerenuk/pwighton/pet/a1a/sub-list-pet-single-subject.txt
 
 PET_DIR=/autofs/vast/petsurfer/a1a-elmenhorst/unpacked/pet/
 
@@ -59,7 +59,7 @@ do
     --seg $SUBJECTS_DIR/$SUB_NAME/mri/aparc+aseg.mgz \
     --ctab $FREESURFER_HOME/FreeSurferColorLUT.txt \
     --i $SUBJECTS_DIR/$SUB_NAME/pet/a1a.vt.fsaverage.nii.gz \
-    --sum $SUBJECTS_DIR/$SUB_NAME/pet/a1a.vt.fsaverage.segstats.nii.gz
+    --sum $SUBJECTS_DIR/$SUB_NAME/pet/a1a.vt.fsaverage.segstats.txt
   
   # project a1a VT data onto surfaces (left hemi)
   mri_vol2surf \
