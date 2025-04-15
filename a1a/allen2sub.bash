@@ -25,7 +25,7 @@ do
   for ALLEN_FILE in $ALLEN_FILES; do
     echo "================================================================="
     echo "SUB: ${SUB_NAME}"
-    echo "ALLEN_FILE: {ALLEN_FILE}"
+    echo "ALLEN_FILE: ${ALLEN_FILE}"
   done
 
 done < "$PET_LIST"
