@@ -39,7 +39,7 @@ do
       --gcam \
         $ALLEN_FILE \
         $FREESURFER_HOME/average/mni_icbm152_nlin_asym_09c/reg-targets/reg.2.0mm.to.1.0mm.lta \
-        $SUBJECTS_DIR/$SUB_NAME/mri/transforms/synthmorph.1.0mm.1.0mm/warp.to.mni152.1.0mm.1.0mm.inv.nii.gz
+        $SUBJECTS_DIR/$SUB_NAME/mri/transforms/synthmorph.1.0mm.1.0mm/warp.to.mni152.1.0mm.1.0mm.inv.nii.gz \
         0 \
         0 \
         1 \
