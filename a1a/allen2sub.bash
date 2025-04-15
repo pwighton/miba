@@ -8,8 +8,8 @@ source $FREESURFER_HOME/SetUpFreeSurfer.sh
 # Output dir for outputs of this script.  This dir will be created inside each subject's dir
 export OUTPUT_DIR=allen
 
-#PET_LIST=/autofs/vast/gerenuk/pwighton/pet/a1a/sub-list-pet.txt
-PET_LIST=/autofs/vast/gerenuk/pwighton/pet/a1a/sub-list-pet-single-subject.txt
+PET_LIST=/autofs/vast/gerenuk/pwighton/pet/a1a/sub-list-pet.txt
+#PET_LIST=/autofs/vast/gerenuk/pwighton/pet/a1a/sub-list-pet-single-subject.txt
 
 # - Allen files were downloaded from:
 #   - https://www.meduniwien.ac.at/neuroimaging/mRNA.html
