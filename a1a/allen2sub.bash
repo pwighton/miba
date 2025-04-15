@@ -25,23 +25,31 @@ do
   
   for ALLEN_FILE in $ALLEN_FILES; do
     BASE_ALLEN_FILE=$(basename "$ALLEN_FILE" .nii)
-    OUTPUT_FILE="${BASE_ALLEN_FILE}.nii.gz"
+    ALLEN_OUTPUT_FILE="${BASE_ALLEN_FILE}.nii.gz"
+    SEGSTATS_OUTPUT_FILE="${BASE_ALLEN_FILE}-segstats.txt"
 
     echo "================================================================="
     echo "SUB: ${SUB_NAME}"
     echo "ALLEN_FILE: ${ALLEN_FILE}"
     echo "BASE_ALLEN_FILE: ${BASE_ALLEN_FILE}"
-    echo "OUTPUT_FILE: ${OUTPUT_FILE}"
+    echo "ALLEN_OUTPUT_FILE: ${ALLEN_OUTPUT_FILE}"
+    echo "SEGSTATS_OUTPUT_FILE: ${SEGSTATS_OUTPUT_FILE}"
         
-    #mri_vol2vol \
-    #  --gcam \
-    #    $ALLEN_FILE \
-    #    $FREESURFER_HOME/average/mni_icbm152_nlin_asym_09c/reg-targets/reg.2.0mm.to.1.0mm.lta \
-    #    $SUBJECTS_DIR/$SUB_NAME/mri/transforms/synthmorph.1.0mm.1.0mm/warp.to.mni152.1.0mm.1.0mm.inv.nii.gz
-    #    0 \
-    #    0 \
-    #    1 \
-    #    $SUBJECTS_DIR/$SUB_NAME/$OUTPUT_DIR/134_mRNA-in-sub-t1-space--inv.nii.gz
+    mri_vol2vol \
+      --gcam \
+        $ALLEN_FILE \
+        $FREESURFER_HOME/average/mni_icbm152_nlin_asym_09c/reg-targets/reg.2.0mm.to.1.0mm.lta \
+        $SUBJECTS_DIR/$SUB_NAME/mri/transforms/synthmorph.1.0mm.1.0mm/warp.to.mni152.1.0mm.1.0mm.inv.nii.gz
+        0 \
+        0 \
+        1 \
+        $SUBJECTS_DIR/$SUB_NAME/$OUTPUT_DIR/$ALLEN_OUTPUT_FILE
+
+    mri_segstats \
+      --seg $SUBJECTS_DIR/$SUB_NAME/mri/aparc+aseg.mgz \
+      --ctab $FREESURFER_HOME/FreeSurferColorLUT.txt \
+      --i $SUBJECTS_DIR/$SUB_NAME/$OUTPUT_DIR/$ALLEN_OUTPUT_FILE \
+      --sum $SUBJECTS_DIR/$SUB_NAME/$OUTPUT_DIR/$SEGSTATS_OUTPUT_FILE
   done
 
 done < "$PET_LIST"
