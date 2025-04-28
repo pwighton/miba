@@ -2,7 +2,7 @@ Data that was provided included
   - Subject's anatomical MRI data (t1-weighted mprages)
   - Subject's average Vt values (PET data)
   
-Processing steps:
+## a1a Processing steps:
 
 1) the provided mprages were unwarped to account for gradient non-linearities (see `unwarp-mprage.bash`) Note the gradient file `coeff_AS097.grad` cannot be shared because it is considered to contain confidential Seimens information 
 
@@ -82,3 +82,113 @@ asegstats2table \
 - `a1a.miba.vt.std.mni152-1.5mm.nii.gz` --> `atlas-a1a_res-1p5_space-mni152_stat-std_mimap.nii.gz`
 - `a1a.miba.vt.std.mni152-2.0mm.nii.gz` --> `atlas-a1a_res-2_space-mni152_stat-std_mimap.nii.gz`
 - `a1a.vt.fsaverage.rois.tsv` --> `atlas-a1a_dseg.tsv`
+
+## Allen data processing steps
+
+1) Allen a1a data was downloaded from https://www.meduniwien.ac.at/neuroimaging/mRNA.html
+- Search for `ADORA1`
+- Resulting `.zip` package includes 2 volumetric files:
+  - `134_mRNA.nii`
+  - `134_mirr_mRNA.nii`
+
+2) These files needed to be converted to LAS to work with `mri_vol2vol`
+- `see nii2las.py`
+- `nii2las.py 134_mRNA.nii 134_mRNA_las.nii`
+- `nii2las.py 134_mirr_mRNA.nii 134_mirr_mRNA_las.nii`
+
+3) A script was written (`allen2sub.bash`) to:
+- use `mri_vol2vol` to warp these two files (`134_mRNA_las.nii` and `134_mirr_mRNA_las.nii`) to the subject space
+- use `mri_segstats` to generate statistics
+
+4) `asegstats2table` was used to aggregate output from `mri_setstats`
+
+```
+asegstats2table \
+  --meas mean \
+  --tablefile 134_mRNA_las.segstats.txt \
+  --common-segs \
+  --no-segno 0 77 \
+  --inputs \
+    ./105_006/allen/134_mRNA_las-segstats.txt \
+    ./105_009/allen/134_mRNA_las-segstats.txt \
+    ./105_014/allen/134_mRNA_las-segstats.txt \
+    ./105_036/allen/134_mRNA_las-segstats.txt \
+    ./105_041/allen/134_mRNA_las-segstats.txt \
+    ./105_043/allen/134_mRNA_las-segstats.txt \
+    ./105_053/allen/134_mRNA_las-segstats.txt \
+    ./105_081/allen/134_mRNA_las-segstats.txt \
+    ./105_089/allen/134_mRNA_las-segstats.txt \
+    ./105_096/allen/134_mRNA_las-segstats.txt \
+    ./105_111/allen/134_mRNA_las-segstats.txt \
+    ./105_119/allen/134_mRNA_las-segstats.txt \
+    ./105_131/allen/134_mRNA_las-segstats.txt \
+    ./105_137/allen/134_mRNA_las-segstats.txt \
+    ./105_139/allen/134_mRNA_las-segstats.txt \
+    ./105_149/allen/134_mRNA_las-segstats.txt \
+    ./105_151/allen/134_mRNA_las-segstats.txt \
+    ./105_155/allen/134_mRNA_las-segstats.txt \
+    ./105_152/allen/134_mRNA_las-segstats.txt \
+    ./105_172/allen/134_mRNA_las-segstats.txt \
+    ./105_173/allen/134_mRNA_las-segstats.txt \
+    ./105_195/allen/134_mRNA_las-segstats.txt \
+    ./105_196/allen/134_mRNA_las-segstats.txt \
+    ./105_199/allen/134_mRNA_las-segstats.txt \
+    ./105_212/allen/134_mRNA_las-segstats.txt \
+    ./105_217/allen/134_mRNA_las-segstats.txt \
+    ./105_225/allen/134_mRNA_las-segstats.txt \
+    ./105_253/allen/134_mRNA_las-segstats.txt \
+    ./105_263/allen/134_mRNA_las-segstats.txt \
+    ./105_265/allen/134_mRNA_las-segstats.txt \
+    ./105_269/allen/134_mRNA_las-segstats.txt \
+    ./105_288/allen/134_mRNA_las-segstats.txt \
+    ./105_319/allen/134_mRNA_las-segstats.txt \
+    ./105_320/allen/134_mRNA_las-segstats.txt
+```
+
+and
+
+```
+asegstats2table \
+  --meas mean \
+  --tablefile 134_mirr_mRNA_las.segstats.txt \
+  --common-segs \
+  --no-segno 0 77 \
+  --inputs \
+    ./105_006/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_009/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_014/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_036/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_041/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_043/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_053/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_081/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_089/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_096/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_111/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_119/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_131/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_137/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_139/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_149/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_151/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_152/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_155/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_172/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_173/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_195/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_196/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_199/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_212/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_217/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_225/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_253/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_263/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_265/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_269/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_288/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_319/allen/134_mirr_mRNA_las-segstats.txt \
+    ./105_320/allen/134_mirr_mRNA_las-segstats.txt
+```
+5) `collate-asegstats2table.py` was used to collate `134_mRNA_las.segstats.txt` and `134_mirr_mRNA_las.segstats.txt` to create `134_mRNA_las.rois.txt` and `134_mirr_mRNA_las.rois.txt`
+- `/autofs/vast/gerenuk/pwighton/pet/miba/collate-asegstats2table.py 134_mRNA_las.segstats.txt 134_mRNA_las.rois.txt`
+- `/autofs/vast/gerenuk/pwighton/pet/miba/collate-asegstats2table.py 134_mirr_mRNA_las.segstats.txt 134_mirr_mRNA_las.rois.txt`
