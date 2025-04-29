@@ -190,5 +190,5 @@ asegstats2table \
     ./105_320/allen/134_mirr_mRNA_las-segstats.txt
 ```
 5) `collate-asegstats2table.py` was used to collate `134_mRNA_las.segstats.txt` and `134_mirr_mRNA_las.segstats.txt` to create `134_mRNA_las.rois.txt` and `134_mirr_mRNA_las.rois.txt`
-- `/autofs/vast/gerenuk/pwighton/pet/miba/collate-asegstats2table.py 134_mRNA_las.segstats.txt 134_mRNA_las.rois.txt`
-- `/autofs/vast/gerenuk/pwighton/pet/miba/collate-asegstats2table.py 134_mirr_mRNA_las.segstats.txt 134_mirr_mRNA_las.rois.txt`
+- `/autofs/vast/gerenuk/pwighton/pet/miba/collate-asegstats2table.py 134_mRNA_las.segstats.txt 134_mRNA_las.rois.tsv`
+- `/autofs/vast/gerenuk/pwighton/pet/miba/collate-asegstats2table.py 134_mirr_mRNA_las.segstats.txt 134_mirr_mRNA_las.rois.tsv`
